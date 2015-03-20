@@ -3,8 +3,7 @@ import scipy.ndimage as spnd
 import matplotlib.pyplot as plt
 import numpy as np
 
-p = 'D:\\Dropbox\\Computer Vision\\c1\\data.png'
-H = [[0,0,0],[1,0,0],[0,0,0]]
+p = 'D:\\Dropbox\\Computer Vision\\code\\c1\\data.png'
 def load_image(path):
     im = spnd.imread(path,mode='L')
     im = np.array(im,np.float32)
@@ -15,13 +14,18 @@ def plot_image(ims=[],title = [],col=1):
     if len(ims)<1:
         return
     num = len(ims)
+    f = False
+    if len(title)== len(ims):
+        f = True
     if num%col != 0:
         max_row = (num+1)/col
     else:
         max_row = num/col
     fig = plt.figure()
     for i in xrange(0,num):
-        fig.add_subplot(col,max_row,i+1)
+        t = fig.add_subplot(col,max_row,i+1)
+        if f:
+            t.set_title(title[i])
         plt.imshow(ims[i],cmap='gray')
     plt.show()
     return
@@ -35,10 +39,12 @@ def cv1_test_1(img):
     for el1 in img:
         result2.append([i for i in reversed(el1)])
     return [result1,result2]
-
-im = load_image(p)
-rm = cv1_test_1(im)
-plot_image(ims = [im,rm[0],rm[1]],col=2)
+def cv1_test_cov(img):
+    x,y = len(img),len(img[0])
+    out1 = np.zeros((x,y))
+    w1  = [[1./9,1./9,1./9],[1./9,1./9,1./9],[1./9,1./9,1./9]]
+    spnd.filters.convolve(input = img,weights = w1,output=out1)
+    return out1
 
 def conv_filter(F,H):
     k = len(H)
