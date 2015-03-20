@@ -55,7 +55,11 @@ def cv1_test_gaussian():
     y = 1/(sigma * np.sqrt(2 * np.pi)) * np.exp(- x**2 / (2 * sigma**2))
     pylab.plot(x,y)
     pylab.show()
-
+def cv1_test_gaufilter(img,sigma = 3):
+    x,y = len(img),len(img[0])
+    out1 = np.zeros((x,y))
+    spnd.filters.gaussian_filter(input=img, sigma=sigma, output=out1)
+    return out1
 
 im = load_image(p)
 rm = cv1_test_1(im)
@@ -66,3 +70,9 @@ rm = cv1_test_cov(im)
 plot_image(ims = [im,rm[0],rm[1]],title = ['Origin','Blur','Sharpening'],col=2)
 
 cv1_test_gaussian()
+
+im = load_image(p)
+rm2 = cv1_test_gaufilter(im)
+rm1 = cv1_test_gaufilter(im,1)
+rm3 = cv1_test_gaufilter(im,5)
+plot_image(ims = [im,rm1,rm2,rm3],title = ['Origin','$\sigma = 1$','$\sigma = 3$','$\sigma = 5$'],col=2)
