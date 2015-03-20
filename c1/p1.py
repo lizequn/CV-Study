@@ -2,6 +2,7 @@ from PIL import Image
 import scipy.ndimage as spnd
 import matplotlib.pyplot as plt
 import numpy as np
+import pylab
 
 p = 'D:\\Dropbox\\Computer Vision\\code\\c1\\data.png'
 def load_image(path):
@@ -44,30 +45,24 @@ def cv1_test_cov(img):
     out1 = np.zeros((x,y))
     w1  = [[1./9,1./9,1./9],[1./9,1./9,1./9],[1./9,1./9,1./9]]
     spnd.filters.convolve(input = img,weights = w1,output=out1)
-    return out1
+    out2 = np.zeros((x,y))
+    w2  = [[-1./9,-1./9,-1./9],[-1./9,2-1./9,-1./9],[-1./9,-1./9,-1./9]]
+    spnd.filters.convolve(input = img,weights = w2,output=out2)
+    return [out1,out2]
+def cv1_test_gaussian():
+    sigma = 3
+    x = np.linspace(-10,10,100)
+    y = 1/(sigma * np.sqrt(2 * np.pi)) * np.exp(- x**2 / (2 * sigma**2))
+    pylab.plot(x,y)
+    pylab.show()
 
-def conv_filter(F,H):
-    k = len(H)
-    if k < 3:
-        return
-    if k!=len(H[0]):
-        return
-    off = (k-1)/2
-    mi = len(F)
-    mj = len(F[0])
-    G = np.zeros((mi,mj))
-    for i in xrange(0,mi):
-        for j in xrange(0,mj):
-            sum = 0
-            for u in xrange(0,k+1):
-                for v in xrange(0,k+1):
-                    ru = u-off
-                    rv = v-off
-                    if i-ru < 0 or i-ru >=mi:
-                        continue
-                    if j-rv < 0 or j-rv >=mj:
-                        continue
-                    sum += F[i-ru][j-rv] * H[u][v]
-            G[i][j] = sum
-    G = np.array(G,np.float32)
-    return G
+
+im = load_image(p)
+rm = cv1_test_1(im)
+plot_image(ims = [im,rm[0],rm[1]],col=2)
+
+im = load_image(p)
+rm = cv1_test_cov(im)
+plot_image(ims = [im,rm[0],rm[1]],title = ['Origin','Blur','Sharpening'],col=2)
+
+cv1_test_gaussian()
